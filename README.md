@@ -8,4 +8,4 @@ a Verilog Matrix Multiplier implementation designed for Nexys3 FPGA. This includ
 Other modules are also designed to support the operations as well. However, their function is visible only on lower levels of abstraction.
 
 ## Design
-<img src="trivia/dfd.png" align="right" width="50%">
+<img src="trivia/dfd.png" align="left" width="50%">
