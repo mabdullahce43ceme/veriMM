@@ -1,7 +1,7 @@
 # veriMM
 a Verilog Matrix Multiplier implementation designed for Nexys3 FPGA. This includes designing the following main modules,
 * **UART** __ which sends and receives data at a baud rate of 9600
-* **MAC** __ which multiplies the operand with its value and accumulates the results
+* **MAC** __ which multiplies the operands and sums them into its value
 * **Memory** __ to store input and output values
 * **Controller** __ to control all the top-level tasks
 
