@@ -1,86 +1,73 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    10:07:51 10/22/2024 
-// Design Name: 
-// Module Name:    Receiver 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
-module Receiver(input rx_data, clk, output reg rx_status, output reg [7:0] RHR
-    );
+module Receiver(
+	input wire clk, rx,
+	output reg rx_status,
+	output wire[7:0] parallel_out
+);
+assign parallel_out = serial_in_parallel_out[8:1];
 
-reg highEdge, lowEdge;
-reg prevRx;
-reg [4:0] counter, c_counter; //, rst_counter;
-reg [7:0] RSR;
 
-//assign highEdge = !prevRx & rx_data;
-//assign lowEdge = prevRx & !rx_data;
+// bclk generator
+reg bclk_en, bclk;				// signals
+reg [31:0] clk_counter;
 
-initial
-begin
-	rx_status = 0;
-	//rst_counter = 0;
+always @(posedge clk) begin
+	if (!bclk_en) begin
+		clk_counter = 0;
+	end else begin
+		clk_counter = clk_counter + 1;
+	end
+end
+always @(clk_counter) begin
+	if (clk_counter == 5208) begin
+		bclk = ~bclk;	// sig handled (1/1)
+		bclk_en = 0;	// sig handled (2/3)
+	end else begin
+		bclk = bclk;
+		bclk_en = 1;	// sig handled (3/3)
+	end
 end
 
-always @(posedge clk)
-begin
-	highEdge = !prevRx & rx_data;
-	lowEdge = prevRx & !rx_data;
-	prevRx = rx_data;
-	RHR = 0;
-	
-	/*if (RHR != 0)
-	begin
-		rst_counter = rst_counter + 1;
-		if (rst_counter == 8)
-		begin
-			rst_counter = 0;
-			RHR = 0;
-		end
-	end*/
-		
-	
-	if (lowEdge == 1 & rx_status == 0)
-	begin
-		counter = 0;
-		c_counter = 0;
-		rx_status = 1;
+
+// receive engine
+reg rst_bit_counter;
+reg[4:0] bit_counter;
+reg[9:0] serial_in_parallel_out;
+
+always @(negedge rx) begin
+	if (!bclk_en) begin
+		bclk_en = 1;	// sig handled (1/3)
+	end else begin
+		bclk_en = bclk_en;
 	end
-	
-	else if (rx_status & c_counter < 8)
-	begin
-		counter = counter + 1;
-		
-		if (counter == 8)
-		begin
-			c_counter = c_counter + 1;
-			counter = 0;
-			
-			
-			RSR = RSR >> 1;
-			RSR[7] = rx_data;
-		end
-	end
-	
-	else if (c_counter == 8)
-	begin
-		RHR = RSR;
+end
+always @(posedge bclk) begin
+	if (bit_counter == 0 & !rx | !rx_status) begin
+		// start bit
+		bit_counter = bit_counter + 1;
+		serial_in_parallel_out[9] = rx;
+		serial_in_parallel_out = serial_in_parallel_out >> 1;
 		rx_status = 0;
+	end else begin
+		// some glitch, so ignore bclk and turn it OFF
+		bit_counter = 0;
+		serial_in_parallel_out = serial_in_parallel_out;
+		rx_started = 1;
+		bclk_en = 0;
 	end
-	
+	if (bit_counter == 10) begin
+		rst_bit_counter = 1;
+		rx_status = 1;
+	end else begin
+		rst_bit_counter = 0;
+	end
 end
+always @(posedge clk) begin
+	if (rst_bit_counter) begin
+		bit_counter = 0;
+	end else begin
+		bit_counter = bit_counter;
+	end
+end
+
 
 endmodule
