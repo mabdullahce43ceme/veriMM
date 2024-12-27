@@ -12,5 +12,5 @@ Other modules are also designed to support the operations as well. However, thei
 The above image shows a DFD of the system on Level Zero. The levels beneath have more modules hidden here. The arrowheads show the direction of the flow of data.
 
 ## Implementation
-The implementation **“veriMM”** is designed for **8-bit unsigned integers**. It supports the multiplication of square matrices of sizes up to **15x15**. On the computer side, a Python3 program is made to perform communication properly.<br>
+The implementation **“veriMM”** is designed for **8-bit unsigned integers**. It supports the multiplication of square matrices of size **3x3** an performs saturation where needed. On the computer side, a Python3 program is made to handle communication properly.<br>
 The entire system is **decomposed into modules** which perform a single task and can easily be represented in the form of an **FSM**.
