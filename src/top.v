@@ -50,22 +50,22 @@ assign parallel_in = mem_out[addr_out];
 /**
  * Processing Elements, inspired from systolic arrays but implemented in parallel manner
 **/
-MAC pe_01(.clk(clk), .rst(mm_rst), .a(a1), .b(b1), .c(c11));
-MAC pe_02(.clk(clk), .rst(mm_rst), .a(a1), .b(b2), .c(c12));
-MAC pe_03(.clk(clk), .rst(mm_rst), .a(a1), .b(b3), .c(c13));
-MAC pe_04(.clk(clk), .rst(mm_rst), .a(a2), .b(b1), .c(c21));
-MAC pe_05(.clk(clk), .rst(mm_rst), .a(a2), .b(b2), .c(c22));
-MAC pe_06(.clk(clk), .rst(mm_rst), .a(a2), .b(b3), .c(c23));
-MAC pe_07(.clk(clk), .rst(mm_rst), .a(a3), .b(b1), .c(c31));
-MAC pe_08(.clk(clk), .rst(mm_rst), .a(a3), .b(b2), .c(c32));
-MAC pe_09(.clk(clk), .rst(mm_rst), .a(a3), .b(b3), .c(c33));
+MAC pe_01(.clk(clk), .rst(mac_rst), .a(a1), .b(b1), .c(c11));
+MAC pe_02(.clk(clk), .rst(mac_rst), .a(a1), .b(b2), .c(c12));
+MAC pe_03(.clk(clk), .rst(mac_rst), .a(a1), .b(b3), .c(c13));
+MAC pe_04(.clk(clk), .rst(mac_rst), .a(a2), .b(b1), .c(c21));
+MAC pe_05(.clk(clk), .rst(mac_rst), .a(a2), .b(b2), .c(c22));
+MAC pe_06(.clk(clk), .rst(mac_rst), .a(a2), .b(b3), .c(c23));
+MAC pe_07(.clk(clk), .rst(mac_rst), .a(a3), .b(b1), .c(c31));
+MAC pe_08(.clk(clk), .rst(mac_rst), .a(a3), .b(b2), .c(c32));
+MAC pe_09(.clk(clk), .rst(mac_rst), .a(a3), .b(b3), .c(c33));
 
 
 /**
  * Defining a controller for the PEs
  * It is to be an FSM
 **/
-reg mm_rst;
+reg mac_rst;
 reg[2:0] state, next_state;
 always @(posedge clk or posedge rst) begin
 	if (rst) begin
@@ -76,7 +76,8 @@ always @(posedge clk or posedge rst) begin
 end
 always @(*) begin
 	next_state = state;
-	mm_rst = 0;
+	mac
+_rst = 0;
 	mm_status = 0;
 	a1 = 0;
 	a2 = 0;
@@ -92,7 +93,8 @@ always @(*) begin
 		end
 		1: begin
 			next_state = 2;
-			mm_rst = 1;
+			mac
+		_rst = 1;
 		end
 		2: begin
 			next_state = 3;
