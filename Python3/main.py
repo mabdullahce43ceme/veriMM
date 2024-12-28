@@ -32,7 +32,7 @@ B = [
 ]
 
 # Serial port configuration
-serial_port = "/dev/cu.usbmodem14201"  # Change to your serial port
+serial_port = "/dev/cu.usbmodem14201"  # Change to your serial port like COM3 for windows
 
 try:
     # Open the serial port
