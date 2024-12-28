@@ -76,8 +76,7 @@ always @(posedge clk or posedge rst) begin
 end
 always @(*) begin
 	next_state = state;
-	mac
-_rst = 0;
+	mac_rst = 0;
 	mm_status = 0;
 	a1 = 0;
 	a2 = 0;
@@ -93,8 +92,7 @@ _rst = 0;
 		end
 		1: begin
 			next_state = 2;
-			mac
-		_rst = 1;
+			mac_rst = 1;
 		end
 		2: begin
 			next_state = 3;
