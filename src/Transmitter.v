@@ -1,4 +1,4 @@
-module Transmitter(
+module Transmitter (
 	input wire clk, en, 
 	input wire[7:0] parallel_in,
 	output wire tx,
