@@ -9,7 +9,7 @@ module MAC (
  * to prevent overflow, saturation is applied on both the addition and multiplication.
 **/
     reg cout;
-    reg[7:0] internal;
+    reg[7:0] temp;
     reg[15:0] mul_res;
     always @(posedge clk or posedge rst) begin
         if (rst) begin

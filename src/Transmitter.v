@@ -48,7 +48,7 @@ assign tx = parallel_in_serial_out[0];
 always @(posedge bclk or posedge en) begin
 	if (en) begin
 		bclk_en = 1;		// sig handled (1/3)
-		parallel_in_serial_out = {1, parallel_in, 0};
+		parallel_in_serial_out = {1'b1, parallel_in, 1'b0};
 		bit_counter = 0;
 	end else begin
 		parallel_in_serial_out = parallel_in_serial_out >> 1;

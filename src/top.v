@@ -66,7 +66,15 @@ MAC pe_09(.clk(clk), .rst(mm_rst), .a(a3), .b(b3), .c(c33));
  * It is to be an FSM
 **/
 reg mm_rst;
-always @(posedge clk) begin
+reg[2:0] state, next_state;
+always @(posedge clk or posedge rst) begin
+	if (rst) begin
+		state = 0;
+	end else begin
+		state = next_state;
+	end
+end
+always @(*) begin
 	next_state = state;
 	mm_rst = 0;
 	mm_status = 0;
@@ -79,25 +87,43 @@ always @(posedge clk) begin
 	case (state)
 		0: begin
 			if (mm_en) begin
-				next_state = state + 1;
+				next_state = 1;
 			end
 		end
 		1: begin
 			next_state = 2;
 			mm_rst = 1;
 		end
+		2: begin
+			next_state = 3;
+			a1 = mem_in[0];
+			a2 = mem_in[3];
+			a3 = mem_in[6];
+			b1 = mem_in[9];
+			b2 = mem_in[12];
+			b3 = mem_in[15];
+		end
+		3: begin
+			next_state = 4;
+			a1 = mem_in[1];
+			a2 = mem_in[4];
+			a3 = mem_in[7];
+			b1 = mem_in[10];
+			b2 = mem_in[13];
+			b3 = mem_in[16];
+		end
+		4: begin
+			next_state = 5;
+			a1 = mem_in[2];
+			a2 = mem_in[5];
+			a3 = mem_in[8];
+			b1 = mem_in[11];
+			b2 = mem_in[14];
+			b3 = mem_in[17];
+		end
 		5: begin
 			mm_status = 1;
 			next_state = 0;
-		end
-		default: begin
-			next_state = state + 1;
-			a1 = mem_in[state - 2];
-			a2 = mem_in[state + 1];
-			a3 = mem_in[state + 4];
-			b1 = mem_in[state + 7];
-			b2 = mem_in[state + 10];
-			b3 = mem_in[state + 13];
 		end
 	endcase
 end
