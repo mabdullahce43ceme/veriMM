@@ -12,26 +12,36 @@ module Transmitter (
 **/
 
 // bclk generator
-reg bclk_en, bclk;				// signals
+reg bclk_en, bclk, rst_clk_counter;				// signals
 reg [31:0] clk_counter;
 
 
 always @(posedge clk) begin
-	if (!bclk_en) begin
+	if (rst_clk_counter) begin
+		clk_counter = 0;
+	end else if (!bclk_en) begin
 		clk_counter = 0;
 	end else begin
 		clk_counter = clk_counter + 1;
 	end
 end
-always @(clk_counter) begin
-	if (clk_counter == 5208) begin
-		bclk = ~bclk;	// sig handled (1/1)
-		bclk_en = 0;	// sig handled (2/3)
+always @(*) begin
+	if (en) begin
+		bclk_en = 1'b1;		// sig handled (1/3)
 	end else begin
-		bclk = bclk;
-		bclk_en = 1;	// sig handled (3/3)
+		bclk_en = 1'b0;
 	end
 end
+always @(*) begin
+	if (clk_counter == 5208) begin
+		bclk = ~bclk;	// sig handled (1/1)
+		rst_clk_counter = 1'b1;
+	end else begin
+		bclk = bclk;
+		rst_clk_counter = 1'b0;
+	end
+end
+
 
 /**
  * baud_count = floor( 100 * 10^6 / (2 * 9600) ) => 5208
@@ -47,19 +57,27 @@ reg [9:0] parallel_in_serial_out;
 assign tx = parallel_in_serial_out[0];
 always @(posedge bclk or posedge en) begin
 	if (en) begin
-		bclk_en = 1;		// sig handled (1/3)
 		parallel_in_serial_out = {1'b1, parallel_in, 1'b0};
-		bit_counter = 0;
+		bit_counter = 4'd0;
 	end else begin
 		parallel_in_serial_out = parallel_in_serial_out >> 1;
-		bit_counter = bit_counter + 1;
+		bit_counter = bit_counter + 1'b1;
 	end
 	/**
 	 * tx_status should come at last 
 	 * because we want tx_status to be updated 
 	 * in the current clock cycle and not in the next one
 	**/
-	tx_status = bit_counter == 9;
+	tx_status = bit_counter <= 4'd9;
+end
+always @(*) begin
+	if (bit_counter == 9) begin
+		rst_bit_counter = 1'b1;
+		bclk_en = 1'b0;
+	end else begin
+		rst_bit_counter = 1'b0;
+		bclk_en = 1'b1;
+	end
 end
 
 
