@@ -26,13 +26,6 @@ always @(posedge clk) begin
 	end
 end
 always @(*) begin
-	if (en) begin
-		bclk_en = 1'b1;		// sig handled (1/3)
-	end else begin
-		bclk_en = 1'b0;
-	end
-end
-always @(*) begin
 	if (clk_counter == 5208) begin
 		bclk = ~bclk;	// sig handled (1/1)
 		rst_clk_counter = 1'b1;
@@ -71,7 +64,9 @@ always @(posedge bclk or posedge en) begin
 	tx_status = bit_counter <= 4'd9;
 end
 always @(*) begin
-	if (bit_counter == 9) begin
+	if (en) begin
+		bclk_en = 1'b1;		// sig handled (1/3)
+	end else if (bit_counter == 9) begin
 		rst_bit_counter = 1'b1;
 		bclk_en = 1'b0;
 	end else begin

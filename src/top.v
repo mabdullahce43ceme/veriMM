@@ -29,19 +29,10 @@ always @(posedge clk or posedge rst) begin
 		for (integer i = 0; i < 18; i = i + 1) begin
 			mem_in[i] = 0;
 		end
-		for (integer i = 0; i < 9; i = i + 1) begin
-			mem_out[i] = 0;
-		end
 	end else if (!rx_status) begin					// if not receiving
 		mem_in[addr_in] = parallel_out;
-		for (integer i = 0; i < 9; i = i + 1) begin
-			mem_out[i] = mem_out[i];
-		end
 	end else begin
 		mem_in[addr_in] = mem_in[addr_in];
-		for (integer i = 0; i < 9; i = i + 1) begin
-			mem_out[i] = mem_out[i];
-		end
 	end
 end
 assign parallel_in = mem_out[addr_out];
@@ -127,16 +118,22 @@ always @(*) begin
 		end
 	endcase
 end
-always @(posedge mm_status) begin
-	mem_out[0] = c11;
-	mem_out[1] = c12;
-	mem_out[2] = c13;
-	mem_out[3] = c21;
-	mem_out[4] = c22;
-	mem_out[5] = c23;
-	mem_out[6] = c31;
-	mem_out[7] = c32;
-	mem_out[8] = c33;
+always @(posedge mm_status or posedge rst) begin
+	if (rst) begin
+		for (integer i = 0; i < 9; i++) begin
+			mem_out[i] = 0;
+		end
+	end else begin
+		mem_out[0] = c11;
+		mem_out[1] = c12;
+		mem_out[2] = c13;
+		mem_out[3] = c21;
+		mem_out[4] = c22;
+		mem_out[5] = c23;
+		mem_out[6] = c31;
+		mem_out[7] = c32;
+		mem_out[8] = c33;
+	end
 end
 
 

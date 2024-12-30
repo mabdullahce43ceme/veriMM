@@ -32,7 +32,7 @@ always @(posedge clk or posedge rst) begin
 end
 always @(posedge clk or posedge mm_status) begin
 	// if matrix multiplication done, start transmission
-	if (mm_status & tx_status & addr_out != 8) begin
+	if (mm_status & (!tx_status & addr_out != 8)) begin
 		tx_en = 1;
 	end else begin
 		tx_en = 0;
